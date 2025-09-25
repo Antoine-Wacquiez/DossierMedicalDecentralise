@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ isNew ? 'Créer' : 'Modifier' }} dossier médical{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+    .search-input {
+      margin-bottom: 1rem;
+      border-radius: .5rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: .5rem;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: .5rem;
+    }
+    .form-check {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: .5rem;
+      padding: .4rem .6rem;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .form-check:hover {
+      background: #e9f7ef;
+      border-color: #198754;
+    }
+    .form-check-input {
+      margin-right: .4rem;
+    }
+    .options-grid::-webkit-scrollbar {
+      width: 6px;
+    }
+    .options-grid::-webkit-scrollbar-thumb {
+      background: #adb5bd;
+      border-radius: 6px;
+    }
+    .accordion-button {
+      font-weight: 600;
+    }
+    .accordion-button:not(.collapsed) {
+      box-shadow: none;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+<div class="container py-4">
+
+  {# HEADER #}
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
+         style="background: linear-gradient(135deg, #198754, #20c997); border-radius: .5rem;">
+      
+      <div class="mb-3 mb-md-0 text-white">
+        <h2 class="fw-bold mb-1">{{ isNew ? '👤 Créer' : '👤 Modifier' }} le dossier médical</h2>
+        <p class="mb-0 text-white-50">Patient : <strong>{{ patient.prenom }} {{ patient.nom|upper }}</strong></p>
+      </div>
+
+      <div>
+        <a href="{{ path('app_medecin_dashboard') }}" class="btn btn-outline-light">
+          <i class="bi bi-arrow-left"></i> Retour
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# FORMULAIRE #}
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-4">
+      {{ form_start(form) }}
+
+      <div class="accordion" id="accordionDossier">
+
+        <!-- Notes médicales -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingNotes">
+            <button class="accordion-button text-primary fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseNotes">
+              📝 Notes médicales
+            </button>
+          </h2>
+          <div id="collapseNotes" class="accordion-collapse collapse show">
+            <div class="accordion-body">
+              {{ form_widget(form.notes, { attr: { class: 'form-control shadow-sm', rows: 6 } }) }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Groupe sanguin -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSang">
+            <button class="accordion-button collapsed text-danger fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSang">
+              🩸 Groupe sanguin
+            </button>
+          </h2>
+          <div id="collapseSang" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <input type="text" class="form-control search-input" placeholder="🔎 Rechercher un groupe..." onkeyup="filterOptions(this, 'sang-options')">
+              <div class="options-grid" id="sang-options">
+                {% for sang in form.groupeSanguin %}
+                  <div class="form-check">
+                    {{ form_widget(sang, { attr: { class: 'form-check-input' } }) }}
+                    {{ form_label(sang, null, { label_attr: { class: 'form-check-label' } }) }}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Allergies -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingAllergies">
+            <button class="accordion-button collapsed text-warning fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAllergies">
+              ⚠️ Allergies
+            </button>
+          </h2>
+          <div id="collapseAllergies" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <input type="text" class="form-control search-input" placeholder="🔎 Rechercher une allergie..." onkeyup="filterOptions(this, 'allergies-options')">
+              <div class="options-grid" id="allergies-options">
+                {% for allergy in form.allergies %}
+                  <div class="form-check">
+                    {{ form_widget(allergy, { attr: { class: 'form-check-input' } }) }}
+                    {{ form_label(allergy, null, { label_attr: { class: 'form-check-label' } }) }}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Traitements -->
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTraitements">
+            <button class="accordion-button collapsed text-success fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTraitements">
+              💊 Traitements
+            </button>
+          </h2>
+          <div id="collapseTraitements" class="accordion-collapse collapse">
+            <div class="accordion-body">
+              <input type="text" class="form-control search-input" placeholder="🔎 Rechercher un traitement..." onkeyup="filterOptions(this, 'traitements-options')">
+              <div class="options-grid" id="traitements-options">
+                {% for traitement in form.traitements %}
+                  <div class="form-check">
+                    {{ form_widget(traitement, { attr: { class: 'form-check-input' } }) }}
+                    {{ form_label(traitement, null, { label_attr: { class: 'form-check-label' } }) }}
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{{ path('app_medecin_dashboard') }}" class="btn btn-outline-secondary">
+          <i class="bi bi-x-circle"></i> Annuler
+        </a>
+        <button type="submit" class="btn {{ isNew ? 'btn-success' : 'btn-warning' }} shadow-sm">
+          {{ isNew ? '💾 Créer dossier' : '💾 Mettre à jour' }}
+        </button>
+      </div>
+
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+<!-- Script filtre -->
+<script>
+function filterOptions(input, containerId) {
+  const filter = input.value.toLowerCase();
+  const options = document.querySelectorAll(`#${containerId} .form-check`);
+  options.forEach(opt => {
+    const text = opt.innerText.toLowerCase();
+    opt.style.display = text.includes(filter) ? '' : 'none';
+  });
+}
+</script>
+{% endblock %}

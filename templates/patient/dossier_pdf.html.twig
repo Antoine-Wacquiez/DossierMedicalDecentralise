@@ -1,0 +1,89 @@
+{# templates/patient/_dossier_pdf.html.twig #}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dossier Médical</title>
+    <style>
+        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; margin: 20px; }
+        h2 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; }
+        .section { margin: 15px 0; }
+        .section-title { background: #000; color: #fff; padding: 5px; text-transform: uppercase; }
+        .ligne { margin: 4px 0; display: flex; justify-content: space-between; }
+        .ligne span { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Dossier Médical</h2>
+
+    <div class="section">
+        <div class="ligne"><span>Nom :</span> {{ user.nom|upper }}</div>
+        <div class="ligne"><span>Prénom :</span> {{ user.prenom|capitalize }}</div>
+        <div class="ligne"><span>Date de naissance :</span>
+            {% if user.dateDeNaissance %}
+                {{ user.dateDeNaissance|date('d/m/Y') }}
+            {% else %}
+                —
+            {% endif %}
+        </div>
+        <div class="ligne"><span>Sexe :</span> {{ user.sexe ?: '—' }}</div>
+        <div class="ligne"><span>Email :</span> {{ user.email ?: '—' }}</div>
+        <div class="ligne"><span>Téléphone :</span> {{ user.numTelephone ?: '—' }}</div>
+        <div class="ligne"><span>Num. Sécu :</span> {{ user.numSecu ?: '—' }}</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Informations médicales</div>
+        <div class="ligne"><span>Groupe sanguin :</span>
+            {% if user.dossierMedical and user.dossierMedical.groupeSanguin %}
+                {{ user.dossierMedical.groupeSanguin.libelle }}
+            {% else %}
+                Non renseigné
+            {% endif %}
+        </div>
+        <div class="ligne"><span>Allergies :</span>
+            {% if user.dossierMedical and user.dossierMedical.allergies|length %}
+                {{ user.dossierMedical.allergies|map(a => a.libelle)|join(', ') }}
+            {% else %}
+                Aucune
+            {% endif %}
+        </div>
+        <div class="ligne"><span>Traitements :</span>
+            {% if user.dossierMedical and user.dossierMedical.traitements|length %}
+                <ul>
+                {% for t in user.dossierMedical.traitements %}
+                    <li>{{ t.libelle }} — {{ t.qteJour }}/j · {{ t.duree }} j</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                Aucun
+            {% endif %}
+        </div>
+        <div class="ligne"><span>Médecin traitant / Notes :</span>
+            {% if user.dossierMedical and user.dossierMedical.notes %}
+                {{ user.dossierMedical.notes }}
+            {% else %}
+                Non renseigné
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Suivi</div>
+        <div class="ligne"><span>Date de création :</span>
+            {% if user.dossierMedical and user.dossierMedical.dateCreation %}
+                {{ user.dossierMedical.dateCreation|date('d/m/Y') }}
+            {% else %}
+                —
+            {% endif %}
+        </div>
+        <div class="ligne"><span>Dernière mise à jour :</span>
+            {% if user.dossierMedical and user.dossierMedical.dateMaj %}
+                {{ user.dossierMedical.dateMaj|date('d/m/Y') }}
+            {% else %}
+                —
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

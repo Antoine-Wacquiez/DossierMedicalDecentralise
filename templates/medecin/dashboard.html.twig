@@ -1,0 +1,203 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Médecin{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+
+    {# HEADER #}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
+             style="background: linear-gradient(135deg, #007c42ff, #00cc4eff); border-radius: .5rem;">
+            
+            <div class="mb-3 mb-md-0">
+                <h1 class="fw-bold text-white mb-1"><i class="bi bi-file-medical"></i> Dashboard Médecin</h1>
+                <p class="text-white-50 mb-0">Bienvenue Dr. {{ app.user.prenom }} {{ app.user.nom }}</p>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a href="{{ path('app_user_edit', {id: app.user.id}) }}" 
+                   class="btn btn-light d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-gear me-2"></i> Modifier mon profil
+                </a>
+                <a href="{{ path('app_home') }}" 
+                   class="btn btn-outline-light d-flex align-items-center justify-content-center">
+                    <i class="bi bi-arrow-left me-2"></i> Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# === PATIENTS === #}
+    <div class="card shadow h-100">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <h5 class="mb-0"><i class="bi bi-person-hearts"></i> Liste des patients</h5>
+
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" class="form-control form-control-sm search-input" 
+                       placeholder="🔍 Rechercher..." style="max-width: 220px;">
+                <input type="number" class="form-control form-control-sm search-id" 
+                       placeholder="ID" style="max-width: 90px;">
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Sexe</th>
+                            <th>Âge</th>
+                            <th>Date de naissance</th>
+                            <th>Email</th>
+                            <th>Téléphone</th>
+                            <th>Num. Sécu</th>
+                            <th>Dossier</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for patient in patients %}
+                        <tr class="row-click" data-href="{{ path('app_medecin_patient', { id: patient.id }) }}">
+                            <td class="patient-id">#{{ patient.id }}</td>
+                            <td>{{ patient.nom }}</td>
+                            <td>{{ patient.prenom }}</td>
+                            <td>
+                                {% if patient.sexe == 'Homme' %}
+                                    <span class="badge bg-primary">Homme</span>
+                                {% elseif patient.sexe == 'Femme' %}
+                                    <span class="badge bg-danger-subtle text-danger-emphasis">Femme</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">{{ patient.sexe ?: '-' }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if patient.dateDeNaissance %}
+                                    {{ date().diff(patient.dateDeNaissance).y }} 
+                                {% else %}-{% endif %}
+                            </td>
+                            <td>{{ patient.dateDeNaissance ? patient.dateDeNaissance|date('d/m/Y') : '-' }}</td>
+                            <td>{{ patient.email }}</td>
+                            <td class="text-nowrap">{{ patient.numTelephone }}</td>
+                            <td class="text-nowrap">{{ patient.numSecu }}</td>
+                            <td>
+                                {% if patient.dossierMedical %}
+                                    <span class="badge bg-success">📂 MAJ {{ patient.dossierMedical.dateMaj|date('d/m/Y') }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">❌ Aucun</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if patient.dossierMedical %}
+                                    <a href="{{ path('app_medecin_dossier_edit', {id: patient.id}) }}"
+                                       class="btn btn-sm btn-warning row-action">
+                                        <i class="bi bi-pencil-square"></i> Modifier
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_medecin_dossier_new', {id: patient.id}) }}"
+                                       class="btn btn-sm btn-success row-action">
+                                        <i class="bi bi-plus-circle"></i> Créer
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center text-muted">Aucun patient enregistré</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <nav><ul style="margin-top: 10px;" class="pagination pagination-sm justify-content-center"></ul></nav>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const rowsPerPage = 9;
+
+    // ✅ Redirection sur clic de ligne
+    document.querySelectorAll('tr.row-click').forEach(tr => {
+        tr.style.cursor = 'pointer';
+        tr.addEventListener('click', () => {
+            const url = tr.getAttribute('data-href');
+            if (url) window.location.href = url;
+        });
+    });
+
+    // ✅ Bloquer la redirection sur les boutons
+    document.querySelectorAll('.row-action').forEach(btn => {
+        btn.addEventListener('click', e => e.stopPropagation());
+    });
+
+    // ✅ Gestion filtres + pagination
+    document.querySelectorAll('.card').forEach(card => {
+        const table = card.querySelector('table');
+        if (!table) return;
+
+        const tbody = table.querySelector('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const searchInput = card.querySelector('.search-input');
+        const searchIdInput = card.querySelector('.search-id');
+        const pagination = card.querySelector('.pagination');
+        if (!searchInput || !pagination) return;
+
+        let currentPage = 1;
+
+        function renderTable() {
+            const query = searchInput.value.trim().toLowerCase();
+            const idQuery = searchIdInput ? searchIdInput.value.trim() : "";
+
+            // 🔎 Filtrage global
+            let filteredRows = rows.filter(r => r.innerText.toLowerCase().includes(query));
+
+            // 🔎 Filtrage par ID exact
+            if (idQuery !== "") {
+                filteredRows = filteredRows.filter(r => {
+                    const idCell = r.querySelector('.patient-id');
+                    return idCell && idCell.textContent.replace('#','').trim() === idQuery;
+                });
+            }
+
+            const totalPages = Math.max(1, Math.ceil(filteredRows.length / rowsPerPage));
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            rows.forEach(r => r.style.display = 'none');
+            filteredRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
+                        .forEach(r => r.style.display = '');
+
+            pagination.innerHTML = '';
+            for (let i = 1; i <= totalPages; i++) {
+                const li = document.createElement('li');
+                li.className = 'page-item ' + (i === currentPage ? 'active' : '');
+                li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+                li.addEventListener('click', e => {
+                    e.preventDefault();
+                    currentPage = i;
+                    renderTable();
+                });
+                pagination.appendChild(li);
+            }
+        }
+
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            renderTable();
+        });
+        if (searchIdInput) {
+            searchIdInput.addEventListener('input', () => {
+                currentPage = 1;
+                renderTable();
+            });
+        }
+
+        renderTable();
+    });
+});
+</script>
+
+{% endblock %}

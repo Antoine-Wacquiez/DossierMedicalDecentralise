@@ -1,0 +1,205 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-5">
+
+                    <h1 class="text-center mb-4 fw-bold">
+                        <i class="bi bi-person-plus-fill"></i> Créer un compte
+                    </h1>
+
+                    {{ form_start(registrationForm) }}
+
+                        {# Identifiant & Email #}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.username, 'Identifiant', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.username, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.username.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                        'placeholder': 'ex: jdupont'
+                                    }
+                                }) }}
+                                {% for error in registrationForm.username.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.email, 'Adresse mail', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.email, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.email.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                        'placeholder': 'ex: jean.dupont@mail.com'
+                                    }
+                                }) }}
+                                {% for error in registrationForm.email.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Nom & Prénom #}
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.prenom, 'Prénom', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.prenom, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.prenom.vars.errors|length > 0 ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                {% for error in registrationForm.prenom.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.nom, 'Nom', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.nom, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.nom.vars.errors|length > 0 ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                {% for error in registrationForm.nom.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Sexe & Date de naissance #}
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.sexe, 'Sexe', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.sexe, {
+                                    'attr': {
+                                        'class': 'form-select' ~ (registrationForm.sexe.vars.errors|length > 0 ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                {% for error in registrationForm.sexe.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.dateDeNaissance, 'Date de naissance', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.dateDeNaissance, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.dateDeNaissance.vars.errors|length > 0 ? ' is-invalid' : '')
+                                    }
+                                }) }}
+                                {% for error in registrationForm.dateDeNaissance.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Téléphone & N° Sécu #}
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.numTelephone, 'Téléphone', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.numTelephone, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.numTelephone.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                        'placeholder': 'ex: 0612345678'
+                                    }
+                                }) }}
+                                {% for error in registrationForm.numTelephone.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {{ form_label(registrationForm.numSecu, 'Numéro de sécurité sociale', {'label_attr': {'class': 'form-label fw-semibold'}}) }}
+                                {{ form_widget(registrationForm.numSecu, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.numSecu.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                        'placeholder': 'ex: 123456789012345'
+                                    }
+                                }) }}
+                                {% for error in registrationForm.numSecu.vars.errors %}
+                                    <div class="invalid-feedback">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        {# Mot de passe avec bouton œil #}
+                        <div class="mt-3">
+                            <label for="passwordInput" class="form-label fw-semibold">Mot de passe</label>
+                            <div class="input-group">
+                                {{ form_widget(registrationForm.plainPassword, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (registrationForm.plainPassword.vars.errors|length > 0 ? ' is-invalid' : ''),
+                                        'placeholder': '••••••••',
+                                        'id': 'passwordInput'
+                                    }
+                                }) }}
+                                <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                                </button>
+                                {% for error in registrationForm.plainPassword.vars.errors %}
+                                    <div class="invalid-feedback d-block">{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <small id="passwordFeedback" class="form-text text-muted">
+                                Le mot de passe doit contenir :
+                                <div class="row mt-1">
+                                    <div class="col-6">
+                                        <ul class="mb-0">
+                                            <li>Au moins 6 caractères</li>
+                                            <li>1 majuscule</li>
+                                            <li>1 minuscule</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-6">
+                                        <ul class="mb-0">
+                                            <li>1 chiffre</li>
+                                            <li>1 caractère spécial</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </small>
+                        </div>
+
+                        {# Bouton #}
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-light btn-lg rounded-pill shadow-sm">
+                                <i class="bi bi-check-circle"></i> S'inscrire
+                            </button>
+                        </div>
+
+                    {{ form_end(registrationForm) }}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  // On récupère l’input par plusieurs stratégies, au cas où l’id serait réécrit
+  let passwordInput =
+      document.getElementById('passwordInput')
+      || document.querySelector('input[data-password-input="1"]')
+      || document.querySelector('input[name$="[plainPassword]"]');
+
+  const toggleBtn  = document.getElementById('togglePassword');
+  const toggleIcon = document.getElementById('togglePasswordIcon');
+  const feedback   = document.getElementById('passwordFeedback');
+
+  // Garde-fou: si un des éléments n’existe pas, on ne fait rien
+  if (!passwordInput || !toggleBtn || !toggleIcon) return;
+
+  // Afficher / masquer
+  toggleBtn.addEventListener('click', function () {
+    const visible = passwordInput.getAttribute('type') === 'text';
+    passwordInput.setAttribute('type', visible ? 'password' : 'text');
+    toggleIcon.classList.toggle('bi-eye',  visible);
+    toggleIcon.classList.toggle('bi-eye-slash', !visible);
+  });
+});
+</script>
+{% endblock %}

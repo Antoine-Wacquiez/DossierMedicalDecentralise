@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - DMD{% endblock %}
+
+{% block body %}
+{# Hero avec image en background #}
+<div class="hero d-flex align-items-center text-center text-white">
+    <div class="container">
+        <h1 class="display-4 fw-bold">Dossier Médical Décentralisé</h1>
+        <p class="lead mt-3">
+            Un système résilient et sécurisé pour préserver vos informations médicales essentielles,
+            même sans Internet.
+        </p>
+
+        <div class="d-flex justify-content-center mt-4 gap-3 flex-wrap">
+            {% if not app.user %}
+                {# Utilisateur non connecté #}
+                <a href="{{ path('app_login') }}" class="btn btn-info btn-lg">Accéder à mon espace</a>
+            {% else %}
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="{{ path('app_admin_dashboard') }}" class="btn btn-danger btn-lg">Dashboard Administrateur</a>
+                {% elseif 'ROLE_MEDECIN' in app.user.roles %}
+                    <a href="{{ path('app_medecin_dashboard') }}" class="btn btn-success btn-lg">Dashboard Médecin</a>
+                {% elseif 'ROLE_PATIENT' in app.user.roles %}
+                    <a href="{{ path('app_patient_dashboard') }}" class="btn btn-primary btn-lg">Voir mon dossier médical</a>
+                {% elseif 'ROLE_USER' in app.user.roles %}
+                    <a class="btn btn-danger btn-lg"> En attente de l'activation de votre compte </a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row text-center">
+    <div class="col-md-4 mb-3">
+        <h3>✅ Simple</h3>
+        <p>Une interface claire et intuitive, utilisable sans formation technique.</p>
+    </div>
+    <div class="col-md-4 mb-3">
+        <h3>🌍 Décentralisé</h3>
+        <p>Fonctionne sans Internet grâce aux réseaux locaux et QR codes.</p>
+    </div>
+    <div class="col-md-4 mb-3">
+        <h3>⚡ Rapide</h3>
+        <p>Accédez aux informations vitales d’un patient en moins de 10 secondes.</p>
+    </div>
+</div>
+
+<style>
+.hero {
+    min-height: 60vh;
+    background: url("{{ asset('images/accueil-dmd.png') }}") center center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+}
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.55); /* filtre sombre pour lisibilité */
+}
+.hero .container {
+    position: relative;
+    z-index: 2;
+}
+</style>
+{% endblock %}

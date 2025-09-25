@@ -1,0 +1,210 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Patient{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+
+    {# HEADER #}
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start"
+             style="background: linear-gradient(135deg, #004085, #0069d9); border-radius: .5rem;">
+
+            <div class="mb-3 mb-md-0">
+                <h1 class="fw-bold text-white mb-1"><i class="bi bi-file-medical"></i> Dashboard Patient</h1>
+                <p class="text-white-50 mb-0">Bienvenue {{ app.user.prenom }} {{ app.user.nom|upper }}</p>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row gap-2">
+                <a href="{{ path('app_user_edit', {id: app.user.id}) }}" 
+                   class="btn btn-light d-flex align-items-center justify-content-center">
+                    <i class="bi bi-person-gear me-2"></i> Modifier mon profil
+                </a>
+                <a href="{{ path('app_home') }}" 
+                   class="btn btn-outline-light d-flex align-items-center justify-content-center">
+                    <i class="bi bi-arrow-left me-2"></i> Retour
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# BOUTON PDF #}
+    <div class="d-flex justify-content-end gap-2 mb-3">
+        <a href="{{ path('app_patient_dossier_pdf', {id: app.user.id}) }}" 
+           class="btn btn-dark btn-sm" target="_blank">
+            <i class="bi bi-printer"></i> Ouvrir / Imprimer le dossier
+        </a>
+    </div>
+
+    {# === DOSSIER MÉDICAL === #}
+    <div class="container carnet-medical">
+        <div class="fiche position-relative">
+
+            <h2 class="titre">Dossier Médical</h2>
+
+            <div class="mb-3 ligne">
+                <strong>N° de dossier :</strong> 
+                {{ app.user.dossierMedical ? app.user.dossierMedical.id : '—' }}
+            </div>
+
+            <h5 class="section-title">Identification du patient</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="ligne"><span>Nom :</span><div>{{ app.user.nom|upper }}</div></div>
+                    <div class="ligne"><span>Prénom :</span><div>{{ app.user.prenom|capitalize }}</div></div>
+                    <div class="ligne"><span>Date de naissance :</span><div>{{ app.user.dateDeNaissance ? app.user.dateDeNaissance|date('d/m/Y') : '' }}</div></div>
+                    <div class="ligne"><span>Âge :</span><div>{{ app.user.dateDeNaissance ? date().diff(app.user.dateDeNaissance).y : '' }} ans</div></div>
+                </div>
+                <div class="col-md-6">
+                    <div class="ligne"><span>Sexe :</span><div>{{ app.user.sexe }}</div></div>
+                    <div class="ligne"><span>N° Sécurité Sociale :</span><div>{{ app.user.numSecu }}</div></div>
+                    <div class="ligne"><span>Téléphone :</span><div>{{ app.user.numTelephone }}</div></div>
+                    <div class="ligne"><span>Email :</span><div>{{ app.user.email }}</div></div>
+                </div>
+            </div>
+
+            <h5 class="section-title">Informations médicales</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="ligne"><span>Groupe sanguin :</span>
+                        <div>{{ app.user.dossierMedical and app.user.dossierMedical.groupeSanguin ? app.user.dossierMedical.groupeSanguin.libelle : 'Non renseigné' }}</div>
+                    </div>
+                    <div class="ligne"><span>Allergies :</span>
+                        <div>
+                            {% if app.user.dossierMedical and app.user.dossierMedical.allergies|length %}
+                                <ul class="mb-0">
+                                    {% for allergie in app.user.dossierMedical.allergies %}
+                                        <li>{{ allergie.libelle }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                Aucune
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Traitements en pleine largeur #}
+            <div class="row">
+                <div class="col-12">
+                    <div class="ligne"><span>Traitements :</span>
+                        <div>
+                            {% if app.user.dossierMedical and app.user.dossierMedical.traitements|length %}
+                                <ul class="mt-2">
+                                    {% for t in app.user.dossierMedical.traitements %}
+                                        <li>{{ t.libelle }} — {{ t.qteJour }}/j · {{ t.duree }} j</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                Aucun
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                {# Notes en pleine largeur #}
+            <div class="row">
+                <div class="col-12">
+                    <div class="ligne"><span>Médecin traitant / Notes :</span>
+                        <div>{{ app.user.dossierMedical and app.user.dossierMedical.notes ? app.user.dossierMedical.notes : 'Non renseigné' }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="section-title">Suivi</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="ligne"><span>Date de création :</span>
+                        <div>{{ app.user.dossierMedical and app.user.dossierMedical.dateCreation ? app.user.dossierMedical.dateCreation|date('d/m/Y') : '—' }}</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="ligne"><span>Dernière mise à jour :</span>
+                        <div>{{ app.user.dossierMedical and app.user.dossierMedical.dateMaj ? app.user.dossierMedical.dateMaj|date('d/m/Y') : '—' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# === STYLE === #}
+<style>
+.carnet-medical {
+    max-width: 950px;
+    margin: auto;
+}
+.fiche {
+    border: 2px solid #004085;
+    border-radius: .5rem;
+    background: #fff;
+    padding: 25px 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.titre {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+    border-bottom: 3px solid #004085;
+    padding-bottom: 6px;
+    margin-bottom: 20px;
+    color: #004085;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.titre::before {
+    content: "🩺";
+    font-size: 1.2rem;
+}
+.section-title {
+    background: linear-gradient(135deg, #004085, #0069d9);
+    color: #fff;
+    padding: 8px 12px;
+    margin: 25px 0 15px;
+    font-size: 1rem;
+    text-transform: uppercase;
+    border-radius: .25rem;
+    font-weight: 600;
+}
+.ligne {
+    border-bottom: 1px dashed #ccc;
+    padding: 6px 0;
+    margin-bottom: 6px;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-wrap: wrap;  /* retour à la ligne possible */
+}
+.ligne span {
+    font-weight: 600;
+    color: #004085;
+    min-width: 180px; /* largeur fixe label */
+    flex-shrink: 0;
+}
+.ligne div {
+    flex: 1;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+/* ✅ Responsive : sur mobile, label au-dessus, valeur dessous */
+@media (max-width: 768px) {
+  .ligne {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ligne span {
+    min-width: auto;
+    margin-bottom: 4px;
+  }
+  .ligne div {
+    width: 100%;
+    word-break: break-word;
+  }
+}
+</style>
+{% endblock %}

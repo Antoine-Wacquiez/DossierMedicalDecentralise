@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier Profil{% endblock %}
+
+{% block body %}
+<div class="container-fluid py-4">
+
+  {# HEADER #}
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start bg-dark text-white rounded">
+      
+      <div class="mb-2 mb-md-0">
+        <h4 class="fw-bold mb-1">
+          <i class="bi bi-pencil-square"></i> Modifier mon profil
+        </h4>
+        <small class="text-white-50">{{ user.prenom }} {{ user.nom|upper }}</small>
+      </div>
+    </div>
+  </div>
+
+  {# FORMULAIRE #}
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      {{ form_start(form) }}
+
+      <div class="row g-3">
+        <!-- Colonne gauche -->
+        <div class="col-md-6">
+          {{ form_row(form.nom, {'attr': {'class': 'form-control shadow-sm'}}) }}
+          {{ form_row(form.prenom, {'attr': {'class': 'form-control shadow-sm'}}) }}
+          {{ form_row(form.dateDeNaissance, {'attr': {'class': 'form-control shadow-sm'}}) }}
+
+          {# Sexe en cartes cliquables #}
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-gender-ambiguous"></i> Sexe
+            </label>
+            <div class="d-flex gap-2">
+
+              <input type="radio" class="btn-check" name="user[sexe]" id="sexeH" value="Homme"
+                     {% if form.vars.value.sexe == 'Homme' %}checked{% endif %}>
+              <label class="sexe-card" for="sexeH">
+                <i class="bi bi-gender-male fs-4 text-dark"></i>
+                <div class="small fw-bold mt-1">Homme</div>
+              </label>
+
+              <input type="radio" class="btn-check" name="user[sexe]" id="sexeF" value="Femme"
+                     {% if form.vars.value.sexe == 'Femme' %}checked{% endif %}>
+              <label class="sexe-card" for="sexeF">
+                <i class="bi bi-gender-female fs-4 text-dark"></i>
+                <div class="small fw-bold mt-1">Femme</div>
+              </label>
+
+              <input type="radio" class="btn-check" name="user[sexe]" id="sexeA" value="Autre"
+                     {% if form.vars.value.sexe == 'Autre' %}checked{% endif %}>
+              <label class="sexe-card" for="sexeA">
+                <i class="bi bi-gender-ambiguous fs-4 text-dark"></i>
+                <div class="small fw-bold mt-1">Autre</div>
+              </label>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Colonne droite -->
+        <div class="col-md-6">
+          {{ form_row(form.email, {'attr': {'class': 'form-control shadow-sm'}}) }}
+          {{ form_row(form.numTelephone, {'attr': {'class': 'form-control shadow-sm'}}) }}
+          {{ form_row(form.numSecu, {'attr': {'class': 'form-control shadow-sm'}}) }}
+        </div>
+      </div>
+
+      {# ✅ CSRF Token #}
+      {{ form_row(form._token) }}
+
+      <div class="d-flex justify-content-between mt-3">
+        <button onclick="window.history.back()" class="btn btn-outline-dark btn-sm">
+          <i class="bi bi-arrow-left"></i> Annuler
+        </button>
+
+        <button type="submit" class="btn btn-dark btn-sm">
+          <i class="bi bi-check-circle"></i> Sauvegarder
+        </button>
+      </div>
+
+      {{ form_end(form, { render_rest: false }) }}
+    </div>
+  </div>
+</div>
+
+<style>
+/* Cartes pour le choix du sexe */
+.sexe-card {
+  border: 1px solid #ccc;
+  border-radius: .4rem;
+  padding: 10px;
+  text-align: center;
+  flex: 1;
+  cursor: pointer;
+  transition: all .3s ease;
+  background: #fff;
+}
+.sexe-card:hover {
+  border-color: #000;
+  background: #f8f9fa;
+}
+.btn-check:checked + .sexe-card {
+  border-color: #000;
+  background: #e6e6e6;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Inputs focus */
+.form-control:focus {
+  border-color: #000;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+}
+</style>
+{% endblock %}
